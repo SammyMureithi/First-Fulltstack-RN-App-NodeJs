@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema( {
         type: Number,
         default:0
     },
-    loogedIn: {
+    loggedIn: {
         type: Number,
         default:0
     }
