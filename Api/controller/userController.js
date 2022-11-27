@@ -8,3 +8,13 @@ module.exports.SignUp = async ( req, res ) => {
         res.status( 400 ).send( { message: error.message, error: true } );
     }
 }
+module.exports.Login = async ( req, res ) => {
+    try {
+        let loginResult = await UserService.Login( req.body );
+        if ( loginResult.error ) return res.status( 400 ).send( loginResult );
+        res.send( loginResult );
+        
+    } catch (error) {
+        res.status( 400 ).send( { message: error.message, error: true } );
+    }
+}

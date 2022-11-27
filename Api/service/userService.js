@@ -1,6 +1,7 @@
 const User = require( '../database/model/userModel' );
 const Constants = require( '../Constants/index' );
 const bcrypt = require( 'bcrypt' );
+const jwt = require( 'jsonwebtoken' );
 const formatMongoData = require( '../Helper/dbHelper' );
 module.exports.SignUp = async ( { fullname, username, nationalId, phoneNumber, password } ) => {
     let response = { ...Constants.MESSAGES.serverDefaultResponse };
@@ -22,4 +23,19 @@ module.exports.SignUp = async ( { fullname, username, nationalId, phoneNumber, p
         response.message = error.message;
     }
     return response;
+}
+module.exports.Login = async ( { username, password } ) => {
+    let response = { ...Constants.MESSAGES.serverDefaultResponse };
+    try {
+        const existUsers = await User.findOne( { username } );
+        if ( !existUsers ) return { error: true, message: "Invalid username or Password" };
+        let validPasword = await bcrypt.compare( password, existUsers.password );
+        if ( !validPasword ) return { error: true, message: "Inavlid username or Password" };
+        const token = jwt.sign( {id:existUsers._id}, process.env.SECRET_KEY || 'my-secrete-key', { expiresIn: "1d" } );
+        let resultUser = formatMongoData.formatMongoData( existUsers );
+        resultUser.signature = token;
+        return { resultUser, message: "Login Successfull", error: false };
+    } catch (error) {
+        return error.message
+    }
 }
