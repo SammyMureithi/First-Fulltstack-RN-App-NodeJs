@@ -27,5 +27,4 @@ export default function Index() {
     </FirstStack.Navigator>
   );
 }
-
 const styles = StyleSheet.create({});

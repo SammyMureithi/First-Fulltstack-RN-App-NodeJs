@@ -9,6 +9,7 @@ module.exports.SignUp = async ( req, res ) => {
     }
 }
 module.exports.Login = async ( req, res ) => {
+    res.header( "Access-Control-Allow-Origin" );
     try {
         let loginResult = await UserService.Login( req.body );
         if ( loginResult.error ) return res.status( 400 ).send( loginResult );

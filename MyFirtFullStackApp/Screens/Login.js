@@ -3,15 +3,33 @@ import React from 'react';
 import {Card, TextInput} from 'react-native-paper';
 import {useState} from 'react';
 import {getCurrentUser, setCurrentUser} from '../Sessions/userSessions';
+import SnackbackComponent from '../components/snackback';
+
+import axios from 'axios';
 
 const Login = ({navigation}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [visible, setVisible] = useState(true);
   async function handleLogin() {
-    await setCurrentUser({name: 'Sammy', id: 1, role: 0});
-    let User = await getCurrentUser();
-    console.log(User);
-    console.log('Hallos');
+    try {
+      const formData = new FormData();
+      formData.append('username', 'Mum');
+      formData.append('password', '7');
+      fetch('https://a895-105-160-25-207.ap.ngrok.io/LearnPhp/login.php', {
+        method: 'POST',
+        headers: {},
+        body: formData,
+      })
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(e => console.log('Error' + e));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  function handleSnackDismiss() {
+    setVisible(false);
   }
   return (
     <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
@@ -78,6 +96,12 @@ const Login = ({navigation}) => {
           </View>
         </Card.Content>
       </Card>
+      <SnackbackComponent
+        message={'Login Successfully'}
+        error={false}
+        handleSnackDismiss={handleSnackDismiss}
+        visible={visible}
+      />
     </View>
   );
 };

@@ -17,7 +17,8 @@ module.exports.SignUp = async ( { fullname, username, nationalId, phoneNumber, p
             fullname, username, nationalId, phoneNumber, password
         } );
         const resultUser = await newUser.save();
-        response.body =  formatMongoData.formatMongoData(resultUser);
+        response.body = formatMongoData.formatMongoData( resultUser );
+        response.status = 200;
 
     } catch (error) {
         response.message = error.message;
@@ -30,7 +31,7 @@ module.exports.Login = async ( { username, password } ) => {
         const existUsers = await User.findOne( { username } );
         if ( !existUsers ) return { error: true, message: "Invalid username or Password" };
         let validPasword = await bcrypt.compare( password, existUsers.password );
-        if ( !validPasword ) return { error: true, message: "Inavlid username or Password" };
+        if ( !validPasword ) return { error: true, message: "Invalid username or Password" };
         const token = jwt.sign( {id:existUsers._id}, process.env.SECRET_KEY || 'my-secrete-key', { expiresIn: "1d" } );
         let resultUser = formatMongoData.formatMongoData( existUsers );
         resultUser.signature = token;
