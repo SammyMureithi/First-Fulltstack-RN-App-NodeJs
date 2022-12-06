@@ -2,30 +2,43 @@ import {View, Text, Image, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {Card, TextInput} from 'react-native-paper';
 import {useState} from 'react';
-import {getCurrentUser, setCurrentUser} from '../Sessions/userSessions';
 import SnackbackComponent from '../components/snackback';
-
-import axios from 'axios';
-
+import ProgessBarComponent from '../components/progessBar';
 const Login = ({navigation}) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [visible, setVisible] = useState(true);
+  const [username, setUsername] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [visible, setVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+  const [taostError, setToastError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   async function handleLogin() {
-    try {
-      const formData = new FormData();
-      formData.append('username', 'Mum');
-      formData.append('password', '7');
-      fetch('https://a895-105-160-25-207.ap.ngrok.io/LearnPhp/login.php', {
-        method: 'POST',
-        headers: {},
-        body: formData,
-      })
-        .then(res => res.json())
-        .then(data => console.log(data))
-        .catch(e => console.log('Error' + e));
-    } catch (error) {
-      console.log(error);
+    setIsLoading(prevState => !prevState);
+    if (username !== null && password !== null) {
+      try {
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+        fetch('https://8ee7-105-160-25-207.in.ngrok.io/LearnPhp/login.php', {
+          method: 'POST',
+          headers: {},
+          body: formData,
+        })
+          .then(res => res.json())
+          .then(data => {
+            setVisible(prevShow => !prevShow);
+            setToastMessage(data.message);
+            setToastError(data.error);
+            setIsLoading(prevState => !prevState);
+          })
+          .catch(e => console.log('Errr' + e));
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      setIsLoading(prevState => !prevState);
+      setToastMessage('Ensure all fields are field');
+      setVisible(true);
+      setToastError(true);
     }
   }
   function handleSnackDismiss() {
@@ -37,10 +50,12 @@ const Login = ({navigation}) => {
         <Card.Content>
           <View style={{alignItems: 'center'}}>
             <Image
-              source={require('../images/icon.jpg')}
+              source={require('../images/AF.PNG')}
               style={{width: 150, height: 150}}
             />
+            {isLoading ? <ProgessBarComponent /> : null}
           </View>
+
           <View>
             <TextInput
               label="Username"
@@ -97,8 +112,8 @@ const Login = ({navigation}) => {
         </Card.Content>
       </Card>
       <SnackbackComponent
-        message={'Login Successfully'}
-        error={false}
+        message={toastMessage}
+        error={taostError}
         handleSnackDismiss={handleSnackDismiss}
         visible={visible}
       />

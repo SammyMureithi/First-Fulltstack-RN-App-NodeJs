@@ -16,7 +16,7 @@ function SignUp({navigation}) {
         <Card.Content>
           <View style={{alignItems: 'center'}}>
             <Image
-              source={require('../images/icon.jpg')}
+              source={require('../images/AF.PNG')}
               style={{width: 150, height: 150}}
             />
           </View>
